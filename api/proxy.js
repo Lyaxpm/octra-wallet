@@ -14,7 +14,7 @@ export default async function handler(req, res) {
       headers,
     };
 
-    if (['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method.toUpperCase()) && req.body) {
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method.toUpperCase()) && req.body) {
       options.body = JSON.stringify(req.body);
       options.headers['Content-Type'] = 'application/json';
     }
