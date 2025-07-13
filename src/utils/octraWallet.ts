@@ -7,9 +7,6 @@ export const PRIVATE_KEY = import.meta.env.VITE_WALLET_PRIVATE_KEY || '';
 
 const IS_BROWSER = typeof window !== 'undefined';
 
-/**
- * Build final RPC URL, lewat proxy jika di browser + production
- */
 function buildUrl(endpoint: string, method: 'GET' | 'POST' = 'GET') {
   const useProxy = IS_BROWSER && import.meta.env.MODE === 'production';
   return useProxy
@@ -17,16 +14,10 @@ function buildUrl(endpoint: string, method: 'GET' | 'POST' = 'GET') {
     : `${RPC}/${endpoint}`;
 }
 
-/**
- * Format validator untuk Octra address
- */
 export function validateAddress(address: string): boolean {
   return /^oct[a-zA-Z0-9]{44}$/.test(address);
 }
 
-/**
- * Decode base64 ke Uint8Array
- */
 function base64ToUint8Array(b64: string): Uint8Array {
   const binary = atob(b64);
   const bytes = new Uint8Array(binary.length);
@@ -36,18 +27,12 @@ function base64ToUint8Array(b64: string): Uint8Array {
   return bytes;
 }
 
-/**
- * Ambil public key dari private key base64
- */
 function getPublicKey(): string {
   const seed = base64ToUint8Array(PRIVATE_KEY);
   const keyPair = nacl.sign.keyPair.fromSeed(seed);
   return btoa(String.fromCharCode(...keyPair.publicKey));
 }
 
-/**
- * Ambil nonce terbaru dari address
- */
 export async function getNonce(): Promise<number> {
   try {
     const res = await axios.get(buildUrl(`balance/${ADDRESS}`, 'GET'));
@@ -58,9 +43,6 @@ export async function getNonce(): Promise<number> {
   }
 }
 
-/**
- * Tanda tangan payload transaksi sesuai CLI mk()
- */
 function signTransactionPayload(payload: any): string {
   const seed = base64ToUint8Array(PRIVATE_KEY);
   const keyPair = nacl.sign.keyPair.fromSeed(seed);
@@ -76,12 +58,9 @@ function signTransactionPayload(payload: any): string {
 
   const message = new TextEncoder().encode(canonical);
   const signature = nacl.sign.detached(message, keyPair.secretKey);
-  return btoa(String.fromCharCode(...signature)); // base64
+  return btoa(String.fromCharCode(...signature));
 }
 
-/**
- * Dapatkan saldo wallet
- */
 export async function getBalance(): Promise<number> {
   try {
     const res = await axios.get(buildUrl(`balance/${ADDRESS}`, 'GET'));
@@ -92,9 +71,6 @@ export async function getBalance(): Promise<number> {
   }
 }
 
-/**
- * Ambil riwayat transaksi wallet
- */
 export async function getTransactionHistory(): Promise<any[]> {
   try {
     const res = await axios.get(buildUrl(`address/${ADDRESS}`, 'GET'));
@@ -111,9 +87,6 @@ export async function getTransactionHistory(): Promise<any[]> {
   }
 }
 
-/**
- * Kirim satu transaksi sesuai CLI
- */
 export async function sendTransaction(to: string, amount: string, message = ''): Promise<any> {
   if (!validateAddress(to)) throw new Error('Alamat tujuan tidak valid');
 
@@ -147,9 +120,6 @@ export async function sendTransaction(to: string, amount: string, message = ''):
   }
 }
 
-/**
- * Kirim banyak transaksi (input: "to:amount" per baris)
- */
 export async function sendMultiTransactions(rawInput: string): Promise<{ success: any[]; failed: any[] }> {
   const lines = rawInput.trim().split('\n');
   const success: any[] = [];
@@ -194,9 +164,6 @@ export async function sendMultiTransactions(rawInput: string): Promise<{ success
   return { success, failed };
 }
 
-/**
- * Ekspor data wallet
- */
 export function exportWallet(format: 'privatekey' | 'wallet' = 'wallet'): string {
   if (format === 'privatekey') return PRIVATE_KEY;
   return JSON.stringify({ addr: ADDRESS, priv: PRIVATE_KEY, rpc: RPC }, null, 2);
