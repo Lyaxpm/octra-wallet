@@ -16,9 +16,9 @@ const MultiSend = () => {
   const [progress, setProgress] = useState(0);
   const { toast } = useToast();
 
-  const exampleInput = `octABC123defGHI456jklMNO789pqrSTU012vwxYZ345abc:100.5
-octDEF456ghiJKL789mnoPQR012stuVWX345yzaBC678def:50.25
-octGHI789jklMNO012pqrSTU345vwxYZ678abcDEF901ghi:75.00`;
+  const exampleInput = `octEV5YmsqMpf3jF6MCY5gakkAeNWSzXVgqPqPiume1pGaN:100.5
+octJ13wcKzYEwDbDkrXrTAFQ27uW3AdtrxpNDSR89zHnrR8:50.25
+octEATz5eg6EwoF5uZU5NdRoanD86escGdvy9s5YkYC2zPu:75.00`;
 
   const parseInput = () => {
     const lines = rawInput.trim().split('\n').filter(line => line.trim());
